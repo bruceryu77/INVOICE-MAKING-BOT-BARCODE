@@ -371,6 +371,46 @@
             font-size: 0.9em;
             color: #555;
         }
+
+        .scanner-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        .scanner-frame {
+            position: absolute;
+            top: 8%;
+            left: 8%;
+            right: 8%;
+            bottom: 8%;
+            border: 2px solid rgba(0, 255, 0, 0.8);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            pointer-events: none;
+        }
+
+        .scanner-line {
+            position: absolute;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: rgba(0, 255, 0, 0.9);
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.9);
+            animation: scan-line 2.2s linear infinite;
+        }
+
+        @keyframes scan-line {
+            0% {
+                top: 18%;
+            }
+            50% {
+                top: 82%;
+            }
+            100% {
+                top: 18%;
+            }
+        }
         
         /* Invoice Modal */
         .invoice-modal {
@@ -873,9 +913,14 @@
         <div class="modal-content">
             <h3>Scan Barcode</h3>
             <p class="scanner-info">
-                Point your phone camera at the product barcode. The scanned code will be inserted into the search box automatically.
+                Align the barcode inside the green frame. Hold your phone steady until it is recognized.
             </p>
-            <video id="barcodeVideo" playsinline></video>
+            <div class="scanner-wrapper">
+                <video id="barcodeVideo" playsinline></video>
+                <div class="scanner-frame">
+                    <div class="scanner-line"></div>
+                </div>
+            </div>
             <div class="modal-buttons" style="margin-top: 15px;">
                 <button class="modal-btn cancel" id="closeScanner">Close</button>
             </div>
@@ -1247,9 +1292,15 @@
             }
             
             try {
-                // 디바이스 ID를 지정하지 않고 기본 카메라 사용
-                const result = await codeReader.decodeOnceFromVideoDevice(undefined, 'barcodeVideo');
-                handleScannedBarcode(result.text);
+                // 연속 스캔 모드: 바코드가 인식될 때까지 반복 시도
+                await codeReader.decodeFromVideoDevice(null, 'barcodeVideo', (result, err) => {
+                    if (result) {
+                        handleScannedBarcode(result.text);
+                    } else if (err && err.name && err.name !== 'NotFoundException') {
+                        // 카메라 동작 중 치명적 에러만 콘솔에 출력
+                        console.error('Barcode scan callback error:', err);
+                    }
+                });
             } catch (err) {
                 console.error('Barcode scan error:', err);
                 if (err && err.name === 'NotAllowedError') {
@@ -1669,6 +1720,7 @@
     </script>
 </body>
 </html>
+
 
 
 
