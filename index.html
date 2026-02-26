@@ -1254,6 +1254,8 @@
                 console.error('Barcode scan error:', err);
                 if (err && err.name === 'NotAllowedError') {
                     alert('Camera permission was denied. Please allow camera access in your browser settings.');
+                } else if (err && (err.name === 'NotFoundError' || err.name === 'OverconstrainedError')) {
+                    alert('No suitable camera device was found. Please check camera permissions and try again.');
                 } else if (err && err.name !== 'NotFoundException') {
                     alert('Barcode scan failed. Please try again.');
                 }
@@ -1667,4 +1669,6 @@
     </script>
 </body>
 </html>
+
+
 
