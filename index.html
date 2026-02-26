@@ -1247,15 +1247,8 @@
             }
             
             try {
-                const devices = await ZXing.BrowserMultiFormatReader.listVideoInputDevices();
-                let deviceId = undefined;
-                
-                if (devices && devices.length > 0) {
-                    const backCamera = devices.find(d => /back|rear|environment/i.test(d.label));
-                    deviceId = (backCamera || devices[0]).deviceId;
-                }
-                
-                const result = await codeReader.decodeOnceFromVideoDevice(deviceId, 'barcodeVideo');
+                // 디바이스 ID를 지정하지 않고 기본 카메라 사용
+                const result = await codeReader.decodeOnceFromVideoDevice(undefined, 'barcodeVideo');
                 handleScannedBarcode(result.text);
             } catch (err) {
                 console.error('Barcode scan error:', err);
@@ -1674,3 +1667,4 @@
     </script>
 </body>
 </html>
+
