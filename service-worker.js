@@ -1,4 +1,4 @@
-const CACHE_NAME = 'invoice-barcode-pwa-v1';
+const CACHE_NAME = 'invoice-barcode-pwa-v2';
 
 const FILES_TO_CACHE = [
   './',
@@ -49,4 +49,6 @@ self.addEventListener('fetch', event => {
     })
   );
 });
+
+
 
